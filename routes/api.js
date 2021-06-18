@@ -34,4 +34,8 @@ router.get("/api/transaction", (req, res) => {
     });
 });
 
+router.get("/", (req, res) => {
+  res.send("working")
+})
+
 module.exports = router;
