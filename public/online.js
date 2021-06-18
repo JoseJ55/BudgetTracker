@@ -1,5 +1,7 @@
 const request = window.indexedDB.open('BudgetDB', 1);
 
+let num = 0;
+
 request.onupgradeneeded = ({target}) => {
     console.log("upgrade")
     const db = target.result;
@@ -15,22 +17,20 @@ request.onsuccess = event =>  {
 const offlineData = () => {
     const addBtn = document.querySelector("#add-btn")
     const subBtn = document.querySelector("#sub-btn")
+
     addBtn.addEventListener("click", offlineAdd)
     subBtn.addEventListener("click", offlineSub)
 }
 
-// let transaction = {
-//     name: nameEl.value,
-//     value: amountEl.value,
-//     date: new Date().toISOString()
-//   };
 const offlineAdd = () =>{
+    num += 1;
     // get data to add to indexdb when offline
     let nameEl = document.querySelector("#t-name");
     let amountEl = document.querySelector("#t-amount");
-    // let errorEl = document.querySelector(".form .error");
-    // console.log("add")
+    
     let data = {
+        listID: num,
+        transaction: "add",
         name: nameEl.value,
         value: amountEl.value,
         date: new Date().toISOString()
@@ -42,10 +42,9 @@ const offlineAdd = () =>{
     const transaction = db.transaction(["BudgetDB"], "readwrite")
     const budgetStore = transaction.objectStore("BudgetDB")
     const budgetIndex = budgetStore.index("budget")
-    const budgetAuto = budgetStore.autoIncrement
-
+    
     budgetStore.add(data)
-
+    
     const getRequest = budgetStore.get('1')
     getRequest.onsuccess = () => {
         console.log(getRequest.result)
@@ -56,17 +55,42 @@ const offlineAdd = () =>{
 
 const offlineSub = () => {
     // get data to sub to indexdb when offline
-    console.log("sub")
+    // console.log("sub")
+    num += 1;
+    // get data to add to indexdb when offline
+    let nameEl = document.querySelector("#t-name");
+    let amountEl = document.querySelector("#t-amount");
+    
+    let data = {
+        listID: num,
+        transaction: "sub",
+        name: nameEl.value,
+        value: amountEl.value,
+        date: new Date().toISOString()
+    };
+
+    console.log(data)
+
+    const db  = request.result;
+    const transaction = db.transaction(["BudgetDB"], "readwrite")
+    const budgetStore = transaction.objectStore("BudgetDB")
+    const budgetIndex = budgetStore.index("budget")
+    
+    budgetStore.add(data)
+    
 }
 
-const saveRecord = (record) => {
-    console.log('Save record invoed');
-
-    const transaction = db.transaction(['BudgetStore'], 'readwrite')
-
-    const store = transaction.objectStore('BudgetStore');
-
-    store.add(record);
+const backOnline = () =>{
+    console.log("online")
+    const db  = request.result;
+    const transaction = db.transaction(["BudgetDB"], "readwrite")
+    const budgetStore = transaction.objectStore("BudgetDB")
+    const budgetIndex = budgetStore.index("budget")
+    const getData = budgetIndex.getAll()
+    getData.onsuccess = () => {
+        console.log(getData.result)
+    }
 }
 
 window.addEventListener('offline', offlineData);
+window.addEventListener('online', backOnline)
