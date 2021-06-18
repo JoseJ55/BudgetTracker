@@ -24,7 +24,6 @@ const offlineData = () => {
 
 const offlineAdd = () =>{
     num += 1;
-    // get data to add to indexdb when offline
     let nameEl = document.querySelector("#t-name");
     let amountEl = document.querySelector("#t-amount");
     
@@ -49,15 +48,10 @@ const offlineAdd = () =>{
     getRequest.onsuccess = () => {
         console.log(getRequest.result)
     }
-    // thinking of adding a global variable to keep track of id for key index
-    // then restart teh variable when back online.
 }
 
 const offlineSub = () => {
-    // get data to sub to indexdb when offline
-    // console.log("sub")
     num += 1;
-    // get data to add to indexdb when offline
     let nameEl = document.querySelector("#t-name");
     let amountEl = document.querySelector("#t-amount");
     
@@ -89,19 +83,14 @@ const backOnline = () =>{
     const budgetStore = transaction.objectStore("BudgetDB")
 
     const getAllData = budgetStore.getAll()
-    getAllData.onsuccess = () => {
-        // console.log(getAllData.result)
-        // console.log(getAllData.result[0].listID)
-        // console.log(getAllData.result[0].transaction)
-        // console.log(getAllData.result[0].name)
-        // console.log(getAllData.result[0].value)
-        // console.log(getAllData.result[0].date)
-        // console.log(getAllData.result.length)
+    
+    getAllData.onsuccess = async () => {
         for(var i = 0; i < getAllData.result.length; i++){
             let name = getAllData.result[i].name
             let value;
             let date = getAllData.result[i].date
             let data = []
+            let innerData = {}
 
             if(getAllData.result[i].transaction === "add"){
                 value = getAllData.result[i].value;
@@ -110,13 +99,28 @@ const backOnline = () =>{
                 value = getAllData.result[i].value;
             }
 
-            data.name = name;
-            data.value = value;
-            data.date = date;
+            innerData.name = name;
+            innerData.value = value.toString();
+            innerData.date = date;
 
-            console.log(data)
+            data.push(innerData)
+
+            try{
+                await fetch("/api/transaction", {
+                    method: "POST",
+                    body: JSON.stringify(data),
+                    headers: {
+                    Accept: "application/json, text/plain, */*",
+                    "Content-Type": "application/json"
+                    }
+                })
+            } catch (err) {
+                console.log(err)
+            }
         }
     }
+
+    budgetStore.clear()
 }
 
 window.addEventListener('offline', offlineData);
