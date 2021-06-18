@@ -1,5 +1,4 @@
 const request = window.indexedDB.open('BudgetDB', 1);
-let url = window.location.href;
 
 let num = 0;
 
@@ -107,7 +106,7 @@ const backOnline = () =>{
             data.push(innerData)
 
             try{
-                await fetch(url + "/api/transaction", {
+                await fetch("/api/transaction", {
                     method: "POST",
                     body: JSON.stringify(data),
                     headers: {

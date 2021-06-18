@@ -1,9 +1,7 @@
 let transactions = [];
 let myChart;
-let url = window.location.href;
-// console.log(url)
 
-fetch(url + "/api/transaction")
+fetch("/api/transaction")
   .then(response => {
     return response.json();
   })
@@ -115,7 +113,7 @@ function sendTransaction(isAdding) {
   populateTotal();
   
   // also send to server
-  fetch(url + "/api/transaction", {
+  fetch("/api/transaction", {
     method: "POST",
     body: JSON.stringify(transaction),
     headers: {

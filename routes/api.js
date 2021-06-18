@@ -1,5 +1,5 @@
-// Heroku having issues here need to replace 'router.get("/api/transaction"'
-// with 'router.get("/"' for it to work with heroku.
+// Heroku having issues here showing all of html, but not the 
+// data from the router.get.
 // ---------------------------------------------------------
 const router = require("express").Router();
 const Transaction = require("../models/transaction.js");
@@ -34,6 +34,7 @@ router.get("/api/transaction", (req, res) => {
     });
 });
 
+// work on how to get this to work
 router.get("/", (req, res) => {
   res.send("working")
 })
