@@ -29,7 +29,7 @@ const offlineAdd = () =>{
     let amountEl = document.querySelector("#t-amount");
     
     let data = {
-        listID: num,
+        listID: num.toString(),
         transaction: "add",
         name: nameEl.value,
         value: amountEl.value,
@@ -62,7 +62,7 @@ const offlineSub = () => {
     let amountEl = document.querySelector("#t-amount");
     
     let data = {
-        listID: num,
+        listID: num.toString(),
         transaction: "sub",
         name: nameEl.value,
         value: amountEl.value,
@@ -82,13 +82,40 @@ const offlineSub = () => {
 
 const backOnline = () =>{
     console.log("online")
+    num = 0;
+
     const db  = request.result;
     const transaction = db.transaction(["BudgetDB"], "readwrite")
     const budgetStore = transaction.objectStore("BudgetDB")
-    const budgetIndex = budgetStore.index("budget")
-    const getData = budgetIndex.getAll()
-    getData.onsuccess = () => {
-        console.log(getData.result)
+
+    const getAllData = budgetStore.getAll()
+    getAllData.onsuccess = () => {
+        // console.log(getAllData.result)
+        // console.log(getAllData.result[0].listID)
+        // console.log(getAllData.result[0].transaction)
+        // console.log(getAllData.result[0].name)
+        // console.log(getAllData.result[0].value)
+        // console.log(getAllData.result[0].date)
+        // console.log(getAllData.result.length)
+        for(var i = 0; i < getAllData.result.length; i++){
+            let name = getAllData.result[i].name
+            let value;
+            let date = getAllData.result[i].date
+            let data = []
+
+            if(getAllData.result[i].transaction === "add"){
+                value = getAllData.result[i].value;
+            } else{
+                getAllData.result[i].value *= -1;
+                value = getAllData.result[i].value;
+            }
+
+            data.name = name;
+            data.value = value;
+            data.date = date;
+
+            console.log(data)
+        }
     }
 }
 
