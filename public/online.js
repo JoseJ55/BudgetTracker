@@ -106,7 +106,7 @@ const backOnline = () =>{
             data.push(innerData)
 
             try{
-                await fetch("/api/transaction", {
+                await fetch("/", {
                     method: "POST",
                     body: JSON.stringify(data),
                     headers: {
